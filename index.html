@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tendo Websites – Web Design and Development</title>
+
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet" />
+
+<style>
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+img { display: block; max-width: 100%; }
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; border: none; }
+
+/* ── TOKENS ── */
+:root {
+  --bg:     #ede8f5;
+  --white:  #ffffff;
+  --ink:    #0e0e0e;
+  --maroon: #7b1d50;
+  --maroon-deep: #4a1030;
+  --yellow: #d4e04a;
+  --pink:   #f0bdd4;
+  --font:   'Satoshi', sans-serif;
+  --font-serif: 'Fraunces', serif;
+  --pill:   9999px;
+  --r:      20px;
+}
+
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--maroon) var(--bg); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--maroon); border-radius: 10px; border: 2px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: var(--maroon-deep); }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+
+:focus-visible { outline: 2.5px solid var(--maroon); outline-offset: 3px; }
+
+/* All :hover effects gated behind (hover: hover) — on touch devices, an element
+   with a :hover style can require a first "wasted" tap just to trigger the hover
+   state before a second tap registers as a real click. Gating removes that trap
+   entirely so every button and card responds on the very first tap. */
+@media (hover: hover) {
+  .nav-btn:hover { opacity: 0.8; transform: translateY(-1px); }
+  .hcta-primary:hover { box-shadow: 0 14px 36px rgba(212,224,74,.24); }
+  .hcta-ghost:hover { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.45); transform: translateY(-2px); }
+  .card:hover .card-inner { transform: translateY(-6px); }
+  .arrow-btn:hover { transform: scale(1.12) rotate(8deg); }
+  .footer-btn:hover { opacity: 0.88; transform: scale(1.01); }
+  .panel-close:hover { background: var(--maroon); }
+  .btn-submit:hover { opacity: .85; transform: scale(1.01); }
+  .lb-close:hover { transform: scale(1.08) rotate(90deg); }
+  .lb-visit:hover { opacity: .85; transform: translateY(-2px); }
+  .wa-float:hover { transform: scale(1.08); box-shadow: 0 10px 30px rgba(0,0,0,.34); }
+}
+
+
+/* ══ CUSTOM CURSOR — only enabled by JS on devices with a real mouse ══ */
+html.custom-cursor-active, html.custom-cursor-active * { cursor: none !important; }
+.cursor-dot {
+  position: fixed; top: 0; left: 0; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--maroon); pointer-events: none; z-index: 9999;
+  transform: translate(-50%, -50%); transition: background .2s ease, opacity .2s ease;
+}
+.cursor-ring {
+  position: fixed; top: 0; left: 0; width: 32px; height: 32px; border-radius: 50%;
+  border: 1.5px solid rgba(123,29,80,.55); pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width .2s ease, height .2s ease, border-color .2s ease, background .2s ease, opacity .2s ease;
+}
+.cursor-ring.hovering { width: 52px; height: 52px; border-color: var(--yellow); background: rgba(212,224,74,.12); }
+.cursor-ring.pressing { width: 26px; height: 26px; }
+.cursor-dot.hidden, .cursor-ring.hidden { opacity: 0; }
+
+/* ══ NAV — transparent over hero, solid after scroll ══ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  background: transparent;
+  padding: 24px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.35s ease, padding 0.35s ease, box-shadow 0.35s ease;
+}
+nav.scrolled {
+  background: var(--white);
+  padding: 14px 40px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.07);
+}
+.logo {
+  font-size: 1.25rem; font-weight: 900; color: #fff;
+  letter-spacing: -0.3px; white-space: nowrap;
+  transition: color 0.35s ease;
+}
+nav.scrolled .logo { color: var(--maroon); }
+.nav-links { display: flex; gap: 6px; }
+.nav-btn {
+  padding: 9px 20px; border-radius: var(--pill);
+  font-size: 0.9rem; font-weight: 700; transition: opacity .15s, transform .15s;
+}
+.btn-work  { background: rgba(255,255,255,0.15); color: #fff; backdrop-filter: blur(8px); transition: background 0.35s ease, color 0.35s ease; }
+.btn-about { background: rgba(255,255,255,0.1);  color: #fff; backdrop-filter: blur(8px); transition: background 0.35s ease, color 0.35s ease; }
+.btn-enq   { background: var(--yellow); color: var(--ink); }
+nav.scrolled .btn-work  { background: var(--yellow); color: var(--ink); }
+nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
+
+.nav-mob { display: none; background: var(--yellow); color: var(--ink);
+  border-radius: var(--pill); padding: 9px 18px;
+  font-size: 0.88rem; font-weight: 700; }
+
+@media (max-width: 680px) {
+  .nav-links { display: none; }
+  .nav-mob { display: block; }
+  nav { padding: 18px 20px; }
+  nav.scrolled { padding: 12px 20px; }
+}
+
+/* ══ HERO — animated gradient editorial, with rotating industry headline ══ */
+.hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(1100px 700px at 82% 8%, rgba(212,224,74,.16), transparent 60%),
+    linear-gradient(155deg, var(--maroon) 0%, var(--maroon-deep) 48%, #170810 100%);
+}
+.hero-grain {
+  position: absolute; inset: 0; z-index: 1; opacity: .035; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+.hero-body {
+  position: relative; z-index: 2; flex: 1;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+  padding: clamp(80px, 10vh, 110px) 72px clamp(70px, 9vh, 100px);
+  max-width: 1300px; width: 100%;
+}
+
+.hero-location { display: flex; align-items: center; gap: 10px; margin-bottom: clamp(16px, 2.5vh, 28px); }
+.hero-location-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); animation: blink 2.4s ease-in-out infinite; }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+.hero-location-text { font-size: .72rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.45); }
+
+.hero-headline { font-size: clamp(3rem, 7vw, 6.8rem); font-weight: 900; line-height: .92; letter-spacing: -3px; color: #fff; }
+.hl-row { display: block; overflow: hidden; }
+.hl-row-inner {
+  display: inline-block;
+  white-space: nowrap;
+  opacity: 0; transform: translateY(100%);
+  animation: rise .8s cubic-bezier(.19,1,.22,1) forwards;
+}
+.hl-row:nth-child(1) .hl-row-inner { animation-delay: .1s; }
+.hl-row:nth-child(2) .hl-row-inner { animation-delay: .28s; }
+.hl-row:nth-child(3) .hl-row-inner { animation-delay: .46s; }
+@keyframes rise { to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .hl-row-inner { opacity: 1; transform: none; animation: none; } }
+
+.hero-headline .hl-row:nth-child(2) { padding-left: clamp(1.5rem, 4vw, 4rem); }
+.hero-headline .hl-row:nth-child(3) { padding-left: clamp(.3rem, 1.5vw, 1.2rem); font-size: clamp(1.8rem, 5.6vw, 5.4rem); }
+
+/* Static italic accent word ("that convert.") */
+.hl-serif {
+  font-family: var(--font-serif);
+  font-style: italic; font-weight: 500;
+  color: var(--yellow);
+  position: relative;
+  padding-right: .06em;
+  display: inline-block;
+}
+.hl-underline {
+  position: absolute; left: -2%; right: -2%; bottom: -.05em;
+  height: .16em; width: 104%;
+}
+.hl-underline path {
+  stroke: var(--yellow); stroke-width: 6; fill: none; stroke-linecap: round;
+  stroke-dasharray: 340; stroke-dashoffset: 340;
+  animation: draw 1s ease-out forwards; animation-delay: 1.05s;
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .hl-underline path { stroke-dashoffset: 0; animation: none; } }
+
+/* Rotating industry word — yellow highlight pill */
+.hl-cycle-word {
+  font-family: var(--font);
+  font-style: normal; font-weight: 900;
+  color: var(--maroon);
+  background: var(--yellow);
+  padding: 0.02em 0.22em 0.06em;
+  border-radius: 10px;
+  display: inline-block;
+  margin-left: 0.18em;
+  white-space: nowrap;
+  transition: opacity .35s ease, transform .35s ease;
+}
+.hl-cycle-word.swap-out { opacity: 0; transform: translateY(-16px); }
+.hl-cycle-word.swap-in-start { opacity: 0; transform: translateY(16px); }
+@media (prefers-reduced-motion: reduce) {
+  .hl-cycle-word { transition: none; }
+}
+
+.hero-sub-wrap { display: flex; align-items: flex-start; gap: 32px; margin-top: clamp(18px, 2.8vh, 36px);
+  opacity: 0; animation: fadeUp .8s ease forwards; animation-delay: .75s; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .hero-sub-wrap { opacity: 1; animation: none; } }
+.hero-sub-line { width: 1px; height: 56px; background: rgba(255,255,255,.2); flex-shrink: 0; margin-top: 3px; }
+.hero-sub-text { font-size: .95rem; font-weight: 500; color: rgba(255,255,255,.6); line-height: 1.6; max-width: 380px; }
+.hero-sub-text strong { color: rgba(255,255,255,.9); font-weight: 700; }
+
+.hero-ctas { display: flex; align-items: center; gap: 16px; margin-top: clamp(18px, 2.8vh, 36px); flex-wrap: wrap;
+  opacity: 0; animation: fadeUp .8s ease forwards; animation-delay: .92s; }
+@media (prefers-reduced-motion: reduce) { .hero-ctas { opacity: 1; animation: none; } }
+
+.hcta-primary {
+  display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; border-radius: var(--pill);
+  background: var(--yellow); color: var(--ink); font-size: .88rem; font-weight: 800; letter-spacing: .01em;
+  transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s;
+  will-change: transform;
+}
+.hcta-primary svg { width: 14px; height: 14px; }
+
+.hcta-ghost {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: var(--pill);
+  background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.22); color: #fff;
+  font-size: .88rem; font-weight: 700; backdrop-filter: blur(8px);
+  transition: background .2s, border-color .2s, transform .22s cubic-bezier(.22,1,.36,1);
+}
+
+/* ── Bottom anchor bar — proof strip ── */
+.hero-proof { position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: stretch; border-top: 1px solid rgba(255,255,255,.1); }
+.proof-crawl { flex: 1; overflow: hidden; display: flex; align-items: center; height: 56px; border-right: 1px solid rgba(255,255,255,.1); }
+.proof-crawl-inner { display: flex; white-space: nowrap; animation: crawl 24s linear infinite; will-change: transform; }
+.proof-crawl-item { display: inline-flex; align-items: center; gap: 14px; padding: 0 36px; font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.32); }
+.proof-crawl-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--yellow); flex-shrink: 0; }
+@keyframes crawl { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.proof-right { display: flex; align-items: center; padding: 0 36px; gap: 24px; flex-shrink: 0; background: rgba(255,255,255,.04); }
+.proof-stat { text-align: center; }
+.proof-stat strong { display: block; font-size: 1.4rem; font-weight: 900; color: #fff; letter-spacing: -1px; line-height: 1; }
+.proof-stat strong em { color: var(--yellow); font-style: normal; }
+.proof-stat span { font-size: .64rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.32); }
+.proof-divider { width: 1px; height: 32px; background: rgba(255,255,255,.1); }
+
+@media (max-width: 900px) {
+  .hero-body { padding: 100px 36px 90px; }
+  .hero-headline { font-size: clamp(2.6rem, 9vw, 4.5rem); letter-spacing: -2px; }
+  .proof-right { display: none; }
+}
+@media (max-width: 600px) {
+  .hero-body { padding: 86px 22px 80px; }
+  .hero-headline { letter-spacing: -1.5px; }
+  .hero-headline .hl-row:nth-child(2) { padding-left: 1rem; }
+  .hero-sub-wrap { flex-direction: column; gap: 12px; margin-top: clamp(14px, 2vh, 24px); }
+  .hero-sub-line { display: none; }
+  .hero-sub-text { font-size: .88rem; }
+  .hero-ctas { margin-top: clamp(14px, 2vh, 24px); flex-direction: column; align-items: flex-start; gap: 10px; }
+  .hcta-primary, .hcta-ghost { width: 100%; justify-content: center; padding: 15px 24px; }
+}
+
+/* ══ PROBLEM SECTION — short, punchy, no fluff ══ */
+.problem-section {
+  position: relative;
+  background: linear-gradient(160deg, var(--maroon) 0%, var(--maroon-deep) 100%);
+  padding: 72px 24px;
+  margin-bottom: 28px;
+  border-radius: 0 0 24px 24px;
+  color: #fff;
+}
+.problem-inner { max-width: 960px; margin: 0 auto; text-align: center; }
+.problem-eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--yellow); margin-bottom: 14px; display: block; }
+.problem-title { font-size: clamp(1.5rem, 3.2vw, 2.3rem); font-weight: 900; letter-spacing: -.8px; line-height: 1.25; max-width: 700px; margin: 0 auto 40px; }
+
+.problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 44px; text-align: left; }
+.problem-card { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.13); border-radius: 16px; padding: 20px; display: flex; gap: 14px; align-items: flex-start; }
+.problem-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--yellow); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.problem-icon svg { width: 18px; height: 18px; stroke: var(--maroon-deep); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.problem-card-text h3 { font-size: .98rem; font-weight: 800; margin-bottom: 4px; }
+.problem-card-text p { font-size: .82rem; color: rgba(255,255,255,.6); font-weight: 500; line-height: 1.5; }
+
+.problem-cta-text { font-family: var(--font-serif); font-style: italic; font-weight: 500; font-size: clamp(1.35rem, 2.6vw, 1.85rem); margin-bottom: 22px; }
+.problem-cta-text .accent-y { color: var(--yellow); }
+.problem-cta-btn {
+  display: inline-flex; align-items: center; gap: 10px; padding: 14px 30px; border-radius: var(--pill);
+  background: var(--yellow); color: var(--ink); font-weight: 800; font-size: .9rem; font-family: var(--font);
+  transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s;
+}
+.problem-cta-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(212,224,74,.26); }
+.problem-cta-btn svg { width: 13px; height: 13px; }
+
+@media (max-width: 1024px) {
+  .problem-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .problem-section { padding: 56px 18px; }
+  .problem-title { margin-bottom: 32px; }
+  .problem-grid { grid-template-columns: 1fr; gap: 12px; margin-bottom: 32px; }
+  .problem-card { padding: 16px 18px; }
+}
+
+/* ══ SECTION HEADINGS ══ */
+.section-head { text-align: center; max-width: 640px; margin: 0 auto 48px; }
+.section-eyebrow {
+  font-size: 0.8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--maroon); margin-bottom: 10px; display: block;
+}
+.section-title {
+  font-size: clamp(2rem, 4.2vw, 3.2rem);
+  font-weight: 900; letter-spacing: -1.2px; line-height: 1.05;
+  display: inline-block; cursor: default;
+  transition: letter-spacing .25s ease, transform .25s ease;
+}
+.section-title:hover { letter-spacing: -0.6px; }
+.section-title .accent { color: var(--maroon); position: relative; }
+.section-title .accent::after {
+  content: ''; position: absolute; left: 0; bottom: 2px; height: 4px; width: 100%;
+  background: var(--yellow); border-radius: 4px; z-index: -1;
+  transform: scaleX(0); transform-origin: left; transition: transform .35s ease;
+}
+.section-title:hover .accent::after { transform: scaleX(1); }
+.section-sub { font-size: 1rem; color: #555; font-weight: 500; margin-top: 14px; line-height: 1.6; }
+
+/* ══ WORK GRID ══ */
+.work-section { padding: 110px 24px 80px; max-width: 100%; }
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 32px;
+  row-gap: 40px;
+  max-width: 1320px; margin: 0 auto;
+  align-items: start;
+  width: 100%;
+}
+.card:nth-child(even) { margin-top: 64px; }
+.card { cursor: pointer; }
+.card-inner {
+  border-radius: var(--r);
+  padding: 22px;
+  position: relative;
+  transition: transform .22s ease;
+}
+.f-lavender { background: #c8bde4; }
+.f-maroon   { background: var(--maroon); }
+.f-lime     { background: #b5dd35; }
+.f-scallop  {
+  background: #f5adc6;
+  border-radius: 44% 16% 44% 16% / 16% 44% 16% 44%;
+  padding: 28px;
+}
+.f-purple   { background: #3e2888; }
+.browser { border-radius: 14px; overflow: hidden; box-shadow: 0 10px 36px rgba(0,0,0,0.22); }
+.browser-bar { display: none; }
+.dot { display: none; }
+.url-bar { display: none; }
+.card-screen { width: 100%; overflow: hidden; }
+.card-screen .live-frame {
+  position: absolute; top: 0; left: 0;
+  width: 1280px; height: 900px; border: none;
+  transform-origin: top left;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .5s ease;
+}
+.card-screen .live-frame.loaded { opacity: 1; }
+.screen-fallback {
+  position: absolute; inset: 0;
+  display: flex;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; padding: 16px; text-align: center;
+  background: linear-gradient(135deg, #ede0f8, #d8cce8);
+}
+.screen-fallback .initial { font-size: 2.8rem; font-weight: 900; color: var(--maroon); }
+.screen-fallback p { font-size: 0.75rem; font-weight: 600; color: #666; }
+.card-meta { padding: 20px 6px 12px; }
+.card-name-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.card-name { font-size: 1.4rem; font-weight: 900; flex: 1; color: var(--ink); }
+.arrow-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--pink); display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; color: var(--ink); font-weight: 800; flex-shrink: 0;
+  transition: transform .15s;
+}
+.card-desc { font-size: 0.95rem; font-weight: 500; color: #666; line-height: 1.6; margin-bottom: 14px; }
+.tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag { padding: 7px 16px; border-radius: var(--pill); background: #ddd4f0; font-size: 0.82rem; font-weight: 700; color: var(--ink); }
+
+/* ══ ABOUT ══ */
+#about { padding: 60px 24px 80px; max-width: 100%; overflow: hidden; }
+.about-inner {
+  max-width: 1080px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px;
+  align-items: center; width: 100%;
+}
+.photo-wrap { position: relative; overflow: visible; }
+.photo-wrap img { width: 100%; border-radius: 20px; aspect-ratio: 3/4; object-fit: cover; object-position: top; }
+.cert-badge {
+  position: absolute; top: -16px; left: -16px;
+  width: 86px; height: 86px; border-radius: 50%;
+  background: var(--maroon);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  padding: 8px;
+}
+.cert-badge svg { width: 26px; height: 26px; fill: #fff; }
+.cert-badge span { font-size: 0.34rem; color: #fff; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; line-height: 1.3; }
+.about-card { background: var(--white); border-radius: 20px; padding: 42px 38px; }
+.about-card p { font-size: 1.05rem; font-weight: 500; color: var(--ink); line-height: 1.7; margin-bottom: 18px; }
+.about-card p:last-child { margin-bottom: 0; }
+.about-card .lead { font-size: 1.2rem; font-weight: 900; }
+.about-stats { display: flex; gap: 28px; margin-top: 26px; flex-wrap: wrap; }
+.about-stat strong { display: block; font-size: 1.8rem; font-weight: 900; color: var(--maroon); }
+.about-stat span { font-size: 0.78rem; font-weight: 700; color: #777; text-transform: uppercase; letter-spacing: .04em; }
+
+/* ══ FOOTER ══ */
+footer {
+  background: var(--maroon);
+  border-radius: 24px 24px 0 0;
+  padding: 64px 44px 0;
+  color: #fff; overflow: hidden; max-width: 100%;
+}
+.footer-top {
+  max-width: 1080px; margin: 0 auto;
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px;
+  align-items: start; padding-bottom: 52px; width: 100%;
+}
+.footer-headline { font-size: clamp(1.8rem, 4vw, 3.2rem); font-weight: 900; line-height: 1.1; letter-spacing: -1.2px; margin-bottom: 32px; }
+.footer-btns { display: flex; flex-direction: column; gap: 12px; max-width: 340px; }
+.footer-btn { display: block; width: 100%; padding: 16px 28px; border-radius: var(--pill); font-size: 0.95rem; font-weight: 800; text-align: center; transition: opacity .15s, transform .15s; }
+.btn-yellow { background: var(--yellow); color: var(--ink); }
+.btn-ghost  { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.3); }
+.btn-ghost:hover { border-color: rgba(255,255,255,.8); }
+.footer-links-box { background: rgba(255,255,255,.12); border-radius: 16px; padding: 28px 24px; }
+.footer-links-box a { display: block; color: #fff; font-size: 0.97rem; font-weight: 700; margin-bottom: 14px; transition: opacity .15s; }
+.footer-links-box a:hover { opacity: .6; }
+.footer-links-box a:last-of-type { margin-bottom: 0; }
+.f-hr { border: none; border-top: 1px solid rgba(255,255,255,.2); margin: 18px 0 12px; }
+.f-copy { font-size: 0.8rem; color: rgba(255,255,255,.6); font-weight: 600; }
+.wordmark-track { white-space: nowrap; overflow: hidden; margin-top: 8px; padding-bottom: 0; line-height: 0.85; max-width: 100%; }
+.wordmark-track-inner { display: inline-block; animation: marquee 18s linear infinite; }
+.wordmark-track-inner span { display: inline-block; font-size: clamp(5rem, 16vw, 13rem); font-weight: 900; letter-spacing: -4px; color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,.15); padding: 0 24px; user-select: none; }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* ══ ENQUIRY PANEL ══ */
+.overlay { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,.45); opacity: 0; pointer-events: none; transition: opacity .3s; }
+.overlay.open { opacity: 1; pointer-events: all; }
+.panel { position: fixed; top: 0; right: 0; bottom: 0; z-index: 501; width: min(540px, 100vw); background: #fff; padding: 52px 38px 40px; overflow-y: auto; transform: translateX(100%); transition: transform .42s cubic-bezier(.22,1,.36,1); }
+.overlay.open .panel { transform: translateX(0); }
+.panel-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 900; transition: background .15s; }
+.panel h2 { font-size: 2rem; font-weight: 900; letter-spacing: -0.8px; color: var(--ink); margin-bottom: 10px; line-height: 1.1; }
+.panel .pdesc { font-size: 0.95rem; color: #555; font-weight: 500; line-height: 1.65; margin-bottom: 28px; }
+.flabel { display: block; font-size: 0.84rem; font-weight: 800; color: var(--ink); margin-bottom: 5px; }
+.flabel em { color: var(--maroon); font-style: normal; }
+.panel input, .panel textarea, .panel select { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid #ddd; font-family: var(--font); font-size: 0.9rem; font-weight: 500; color: var(--ink); outline: none; margin-bottom: 16px; appearance: none; -webkit-appearance: none; transition: border-color .2s; }
+.panel input:focus, .panel textarea:focus, .panel select:focus { border-color: var(--maroon); }
+.panel textarea { resize: vertical; min-height: 100px; }
+.sel-wrap { position: relative; margin-bottom: 16px; }
+.sel-wrap select { margin-bottom: 0; padding-right: 36px; cursor: pointer; }
+.sel-wrap::after { content: '⌄'; position: absolute; right: 12px; top: 50%; transform: translateY(-60%); color: #aaa; pointer-events: none; font-size: 1rem; }
+.btn-submit { width: 100%; padding: 16px; border-radius: var(--pill); background: var(--maroon); color: #fff; font-family: var(--font); font-size: 0.97rem; font-weight: 800; margin-top: 4px; transition: opacity .15s, transform .15s; }
+.panel-note { text-align: center; font-size: 0.75rem; color: var(--maroon); font-weight: 700; margin-top: 12px; }
+
+/* ══ LIGHTBOX ══ */
+.lb-overlay { position: fixed; inset: 0; z-index: 600; background: rgba(0,0,0,.65); display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.lb-overlay.open { opacity: 1; pointer-events: all; }
+.lb-box { background: #fff; border-radius: 18px; width: 100%; max-width: 700px; height: 91vh; max-height: 91vh; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.35); display: flex; flex-direction: column; position: relative; transform: scale(.94) translateY(14px); transition: transform .34s cubic-bezier(.22,1,.36,1); }
+.lb-overlay.open .lb-box { transform: scale(1) translateY(0); }
+.lb-close { position: absolute; top: 14px; right: 14px; z-index: 5; width: 38px; height: 38px; border-radius: 50%; background: var(--yellow); color: var(--ink); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 900; box-shadow: 0 2px 8px rgba(0,0,0,.15); transition: transform .15s; }
+/* Neutral gray stage the framed preview sits on — small, centered, no lavender bleeding through the sides */
+.lb-site-wrap { width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; background: #f2f2f4; overflow: hidden; padding: 20px; touch-action: pan-y; }
+.lb-iframe-wrap { position: relative; overflow: hidden; background: #fff; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,.18); touch-action: auto; }
+.lb-iframe-wrap iframe {
+  position: absolute; top: 0; left: 0;
+  width: 1440px; height: 900px;
+  border: none; transform-origin: 0 0;
+  opacity: 0; transition: opacity .4s ease;
+  pointer-events: auto; touch-action: auto;
+}
+.lb-iframe-wrap iframe.loaded { opacity: 1; }
+.lb-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; font-size: 0.85rem; font-weight: 700; color: #888; text-align: center; padding: 20px; }
+.lb-spinner { width: 32px; height: 32px; border: 3px solid rgba(0,0,0,.1); border-top-color: var(--maroon); border-radius: 50%; animation: lbspin .8s linear infinite; }
+@keyframes lbspin { to { transform: rotate(360deg); } }
+.lb-loading-sub { font-size: .76rem; font-weight: 600; color: #aaa; max-width: 280px; }
+.lb-loading-sub a { color: var(--maroon); text-decoration: underline; }
+.lb-loading.slow .lb-loading-sub { color: var(--maroon); }
+.lb-body { padding: 14px 22px 18px; flex-shrink: 0; border-top: 1px solid #f0f0f0; }
+.lb-name-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+.lb-name { font-size: 1.15rem; font-weight: 900; color: var(--ink); flex: 1; min-width: 0; }
+.lb-visit { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--pill); background: var(--maroon); color: #fff; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; transition: opacity .15s, transform .15s; }
+.lb-desc { font-size: 0.84rem; font-weight: 500; color: #444; line-height: 1.55; margin-bottom: 10px; }
+.lb-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+
+/* ══ TOAST ══ */
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--ink); color: #fff; padding: 12px 24px; border-radius: var(--pill); font-weight: 700; font-size: 0.85rem; z-index: 900; pointer-events: none; transition: transform .28s; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ══ WHATSAPP FLOATING BUTTON ══ */
+.wa-float {
+  position: fixed; bottom: 26px; right: 26px; z-index: 400;
+  width: 58px; height: 58px; border-radius: 50%;
+  background: #25D366; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.wa-float svg { width: 30px; height: 30px; fill: #fff; }
+
+/* ══ RESPONSIVE (rest of site) ══ */
+@media (max-width: 1024px) {
+  .work-grid { grid-template-columns: 1fr 1fr; column-gap: 24px; }
+  .about-inner { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  html { font-size: 15px; }
+  .work-section { padding: 64px 14px 48px; }
+  .work-grid { grid-template-columns: 1fr; gap: 24px; }
+  .card:nth-child(even) { margin-top: 0; }
+  .section-title { font-size: 1.7rem; }
+  .section-sub { font-size: 0.9rem; }
+  #about { padding: 36px 14px 56px; }
+  .about-card { padding: 26px 20px; }
+  .about-card .lead { font-size: 1.05rem; }
+  .about-card p { font-size: 0.92rem; }
+  .about-stats { gap: 20px; }
+  .about-stat strong { font-size: 1.4rem; }
+  footer { padding: 40px 18px 0; }
+  .footer-top { grid-template-columns: 1fr; gap: 28px; }
+  .footer-headline { font-size: 1.7rem; }
+  .footer-btn { padding: 14px 22px; font-size: 0.88rem; }
+  .panel { padding: 48px 18px 32px; }
+  .panel h2 { font-size: 1.6rem; }
+  .lb-overlay { padding: 10px; }
+  .lb-box { height: 90vh; max-height: 90vh; border-radius: 14px; }
+  .lb-box { height: 90dvh; max-height: 90dvh; } /* accurate on mobile browsers where the address bar resizes */
+  .lb-site-wrap { padding: 14px; }
+  .lb-visit { padding: 7px 12px; font-size: .74rem; }
+  .lb-name { font-size: 1.15rem; }
+  .lb-body { padding: 14px 18px 18px; }
+  .toast { font-size: 0.78rem; padding: 10px 18px; bottom: 18px; }
+  .wa-float { width: 52px; height: 52px; bottom: 18px; right: 18px; }
+  .wa-float svg { width: 26px; height: 26px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="mainNav">
+  <div class="logo">Tendo Websites</div>
+  <div class="nav-links">
+    <button class="nav-btn btn-work"  onclick="smoothTo('work')">Work</button>
+    <button class="nav-btn btn-about" onclick="smoothTo('about')">About</button>
+    <button class="nav-btn btn-enq"   onclick="openPanel()">Enquiries</button>
+  </div>
+  <button class="nav-mob" onclick="openPanel()">Enquiries</button>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="hero">
+
+  <div class="hero-bg"></div>
+  <div class="hero-grain" aria-hidden="true"></div>
+
+  <div class="hero-body">
+
+    <div class="hero-location" aria-label="Harare, Zimbabwe">
+      <span class="hero-location-dot" aria-hidden="true"></span>
+      <span class="hero-location-text">Harare · Zimbabwe · Est. 2019</span>
+    </div>
+
+    <h1 class="hero-headline">
+      <span class="hl-row"><span class="hl-row-inner">Websites</span></span>
+      <span class="hl-row"><span class="hl-row-inner">that <span class="hl-serif">convert.</span></span></span>
+      <span class="hl-row"><span class="hl-row-inner">Built for <span class="hl-cycle-word" id="cycleWord">clinics</span></span></span>
+    </h1>
+
+    <div class="hero-sub-wrap">
+      <span class="hero-sub-line" aria-hidden="true"></span>
+      <p class="hero-sub-text">
+        <strong>Six years</strong> designing &amp; building websites for Zimbabwean businesses — from the first wireframe to a live, growing site. No templates. No handoffs. Just sharp work.
+      </p>
+    </div>
+
+    <div class="hero-ctas">
+      <button class="hcta-primary" id="ctaPrimary" onclick="smoothTo('work')">
+        View my work
+        <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="hcta-ghost" onclick="openPanel()">
+        Start a project
+      </button>
+    </div>
+
+  </div>
+
+
+</section>
+
+<!-- ═══ WORK GRID ═══ -->
+<section class="work-section" id="work">
+  <div class="section-head">
+    <span class="section-eyebrow">Selected Work</span>
+    <h2 class="section-title">My <span class="accent">Projects</span></h2>
+    <p class="section-sub">Five live websites, built end-to-end — design, development and launch.</p>
+  </div>
+
+  <div class="work-grid">
+
+    <div class="card" id="card-0">
+      <div class="card-inner f-lavender">
+        <div class="browser">
+          <div class="browser-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="url-bar">aquawellness.co.zw</span>
+          </div>
+          <div class="card-screen"><img src="aquawellness.png" alt="Aqua Wellness" style="width:100%;height:auto;display:block;"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name-row">
+          <span class="card-name">Aqua Wellness</span>
+          <button class="arrow-btn" onclick="event.stopPropagation();openLB(0)">↗</button>
+        </div>
+        <p class="card-desc">Harare's premier aquatic fitness centre — swim coaching, aqua aerobics &amp; deep water training.</p>
+        <div class="tags"><span class="tag">Web Design</span><span class="tag">Development</span></div>
+      </div>
+    </div>
+
+    <div class="card" id="card-1">
+      <div class="card-inner f-maroon">
+        <div class="browser">
+          <div class="browser-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="url-bar">cityscapegraphics.co.zw</span>
+          </div>
+          <div class="card-screen"><img src="cityscape.png" alt="City Scape Graphics" style="width:100%;height:auto;display:block;"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name-row">
+          <span class="card-name">City Scape Graphics</span>
+          <button class="arrow-btn" onclick="event.stopPropagation();openLB(1)">↗</button>
+        </div>
+        <p class="card-desc">Harare's 24-hour premium printing studio — canvas portraits, large-format prints &amp; vehicle wraps.</p>
+        <div class="tags"><span class="tag">Web Design</span><span class="tag">Development</span></div>
+      </div>
+    </div>
+
+    <div class="card" id="card-2">
+      <div class="card-inner f-lime">
+        <div class="browser">
+          <div class="browser-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="url-bar">lismerginvestments.co.zw</span>
+          </div>
+          <div class="card-screen"><img src="lismerg.png" alt="Lismerg Investments" style="width:100%;height:auto;display:block;"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name-row">
+          <span class="card-name">Lismerg Investments</span>
+          <button class="arrow-btn" onclick="event.stopPropagation();openLB(2)">↗</button>
+        </div>
+        <p class="card-desc">Harare's trusted construction specialists — building, roofing, paving, tiling &amp; steelwork.</p>
+        <div class="tags"><span class="tag">Web Design</span><span class="tag">Development</span></div>
+      </div>
+    </div>
+
+    <div class="card" id="card-3">
+      <div class="card-inner f-scallop">
+        <div class="browser">
+          <div class="browser-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="url-bar">megaearthmoverstrainingschool.co.zw</span>
+          </div>
+          <div class="card-screen"><img src="megaearthmovers.png" alt="Mega Earthmovers" style="width:100%;height:auto;display:block;"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name-row">
+          <span class="card-name">Mega Earthmovers</span>
+          <button class="arrow-btn" onclick="event.stopPropagation();openLB(3)">↗</button>
+        </div>
+        <p class="card-desc">Zimbabwe's top heavy-equipment training school — certified operator programs for excavators, cranes &amp; more.</p>
+        <div class="tags"><span class="tag">Web Design</span><span class="tag">Development</span></div>
+      </div>
+    </div>
+
+    <div class="card" id="card-4">
+      <div class="card-inner f-purple">
+        <div class="browser">
+          <div class="browser-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="url-bar">physioworks.co.zw</span>
+          </div>
+          <div class="card-screen"><img src="physioworks.png" alt="PhysioWorks" style="width:100%;height:auto;display:block;"></div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name-row">
+          <span class="card-name">PhysioWorks</span>
+          <button class="arrow-btn" onclick="event.stopPropagation();openLB(4)">↗</button>
+        </div>
+        <p class="card-desc">Harare's leading physiotherapy clinic — 4 branches, evidence-based sports &amp; rehabilitation care.</p>
+        <div class="tags"><span class="tag">Web Design</span><span class="tag">Development</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="section-head">
+    <span class="section-eyebrow">The Person Behind The Pixels</span>
+    <h2 class="section-title">About <span class="accent">Me</span></h2>
+  </div>
+  <div class="about-inner">
+    <div class="photo-wrap">
+      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=700&q=80" alt="Tendo, web developer" />
+      <div class="cert-badge">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        <span>6 Years Experience</span>
+      </div>
+    </div>
+    <div class="about-card">
+      <p class="lead">Hey, I'm Tendo — a 21-year-old web developer based in Waterfalls, Harare. I've spent the last 6 years learning, building and refining my craft, one website at a time.</p>
+      <p>I work directly with Zimbabwean businesses — from fitness studios to construction firms to training schools — to design and build websites that actually do their job: load fast, look sharp on every screen, and turn visitors into customers.</p>
+      <p>Every project on this page is live, real, and built from scratch. No templates pretending to be custom work. Just clean design and solid code, made right here in Harare.</p>
+      <div class="about-stats">
+        <div class="about-stat"><strong>6+</strong><span>Years Building</span></div>
+        <div class="about-stat"><strong>5+</strong><span>Live Projects</span></div>
+        <div class="about-stat"><strong>21</strong><span>Years Old</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ THE PROBLEM ═══ -->
+<section class="problem-section" id="problem">
+  <div class="problem-inner">
+    <span class="problem-eyebrow">The Problem</span>
+    <h2 class="problem-title">If people can't find you online, they find your competitor instead.</h2>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </div>
+        <div class="problem-card-text">
+          <h3>Not on Google</h3>
+          <p>Customers search, you don't show up.</p>
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        </div>
+        <div class="problem-card-text">
+          <h3>Closed after hours</h3>
+          <p>No answers when they need you most.</p>
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <div class="problem-card-text">
+          <h3>Looks unofficial</h3>
+          <p>No site, no trust, no sale.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="problem-cta-text">Sound familiar? <span class="accent-y">Let's talk.</span></p>
+    <button class="problem-cta-btn" onclick="openPanel()">
+      Start the conversation
+      <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <h2 class="footer-headline">Let's build something that actually works for your brand.</h2>
+      <div class="footer-btns">
+        <button class="footer-btn btn-yellow" onclick="openPanel()">Submit a project enquiry</button>
+        <button class="footer-btn btn-ghost"  onclick="copyEmail()">Copy email address</button>
+      </div>
+    </div>
+    <div class="footer-links-box">
+      <a href="#work" onclick="smoothTo('work')">Work</a>
+      <a href="#about" onclick="smoothTo('about')">About</a>
+      <a href="https://wa.me/263780159253" target="_blank" rel="noopener">WhatsApp</a>
+      <hr class="f-hr" />
+      <p class="f-copy">© Tendo Websites 2026. Harare, Zimbabwe.</p>
+    </div>
+  </div>
+  <div class="wordmark-track">
+    <div class="wordmark-track-inner">
+      <span>tendo websites</span><span>tendo websites</span>
+      <span>tendo websites</span><span>tendo websites</span>
+      <span>tendo websites</span><span>tendo websites</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ ENQUIRY PANEL ═══ -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="panel" id="enquiryPanel">
+    <button class="panel-close" onclick="closePanel()">✕</button>
+    <h2>Project Enquiry</h2>
+    <p class="pdesc">Quick form — just the essentials. I'll follow up on WhatsApp or email within 1–2 days.</p>
+    <label class="flabel">Full Name <em>*</em></label>
+    <input type="text" id="enqName" placeholder="Jane Smith" />
+    <label class="flabel">WhatsApp Number or Email <em>*</em></label>
+    <input type="text" id="enqContact" placeholder="e.g. 077 123 4567 or jane@company.com" />
+    <label class="flabel">Tell me about your project <em>*</em></label>
+    <textarea id="enqDetails" rows="5" placeholder="What do you need built, and when would you like it live?"></textarea>
+    <button class="btn-submit" onclick="submitForm()">Submit →</button>
+    <p class="panel-note">Made with ✦ care, in Harare</p>
+  </div>
+</div>
+
+<!-- ═══ LIGHTBOX ═══ -->
+<div class="lb-overlay" id="lbOverlay" onclick="handleLBClick(event)">
+  <div class="lb-box" id="lbBox">
+    <button class="lb-close" onclick="closeLB()">✕</button>
+    <div class="lb-site-wrap">
+      <div class="lb-iframe-wrap" id="lbIframeWrap">
+        <div class="lb-loading" id="lbLoading">
+          <div class="lb-spinner"></div>
+          <span>Loading live site…</span>
+          <span class="lb-loading-sub" id="lbLoadingSub"></span>
+        </div>
+        <iframe id="lbIframe" src="" title="Live site preview" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+      </div>
+    </div>
+    <div class="lb-body">
+      <div class="lb-name-row">
+        <span class="lb-name" id="lbName"></span>
+        <a class="lb-visit" id="lbVisit" href="#" target="_blank" rel="noopener">Visit site ↗</a>
+      </div>
+      <p class="lb-desc" id="lbDesc"></p>
+      <div class="lb-tags" id="lbTags"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- WHATSAPP FLOATING BUTTON -->
+<a class="wa-float" href="https://wa.me/263780159253" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.25-1.38c1.44.79 3.06 1.2 4.79 1.2h.01c5.5 0 9.96-4.46 9.96-9.96 0-2.66-1.04-5.16-2.92-7.04A9.9 9.9 0 0 0 12.04 2zm0 18.2h-.01c-1.5 0-2.98-.4-4.27-1.16l-.31-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.53 3.69-8.22 8.24-8.22 2.2 0 4.27.86 5.82 2.41a8.17 8.17 0 0 1 2.41 5.82c0 4.53-3.69 8.23-8.13 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.78.97-.14.17-.29.19-.53.06-.25-.12-1.04-.38-1.99-1.22-.73-.66-1.23-1.46-1.37-1.71-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.42-.14 0-.31-.02-.48-.02-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.28z"/></svg>
+</a>
+
+<!-- Hidden background loaders — silently pre-warm a site the moment someone hovers its card,
+     so by the time they click, the browser already has it cached and it opens near-instantly. -->
+<div id="lbPreloadPool" style="position:fixed; width:0; height:0; overflow:hidden; opacity:0; pointer-events:none;" aria-hidden="true"></div>
+
+<script>
+/* ── TEMPORARY DEBUG BANNER — shows errors AND key trace points directly on
+   screen so we can see exactly what's happening on your actual phone instead
+   of guessing blind. Remove this whole block once the bug is found. ── */
+function debugLog(msg) {
+  let banner = document.getElementById('debugErrorBanner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'debugErrorBanner';
+    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:#fff;font:12px monospace;padding:10px;z-index:999999;max-height:50vh;overflow:auto;white-space:pre-wrap;';
+    document.body.appendChild(banner);
+  }
+  banner.textContent += msg + '\n';
+  banner.scrollTop = banner.scrollHeight;
+}
+window.addEventListener('error', (e) => {
+  debugLog(`ERROR: ${e.message}  (line ${e.lineno}, col ${e.colno})`);
+});
+document.addEventListener('DOMContentLoaded', () => debugLog('page loaded ok'));
+</script>
+<script>
+const PROJECTS = [
+  { name: 'Aqua Wellness', url: 'https://aquawellness.co.zw', desc: "Harare's premier aquatic fitness centre — SCW-certified aqua aerobics, deep water training, adult swim lessons, and tennis coaching. I designed and built this site to clearly communicate the brand and drive class bookings, with a layout that works across all devices.", tags: ['Web Design','Development'] },
+  { name: 'City Scape Graphics', url: 'https://cityscapegraphics.co.zw', desc: "Harare's 24-hour premium printing and branding studio — canvas portraits, large-format printing, event backdrops, and vehicle wraps. The site was built to match the boldness of their work, with a strong visual identity and a clear path to generate quote requests.", tags: ['Web Design','Development'] },
+  { name: 'Lismerg Investments', url: 'https://lismerginvestments.co.zw', desc: "Trusted construction specialists offering domestic and industrial building, roofing, paving, painting, tiling, and steelwork. Built from scratch to convert project enquiries — clean layout, clear service breakdown, and a design that communicates reliability.", tags: ['Web Design','Development'] },
+  { name: 'Mega Earthmovers', url: 'https://megaearthmoverstrainingschool.co.zw', desc: "Zimbabwe's most trusted government-accredited heavy-equipment training school — certified operator programs for excavators, cranes, bulldozers, and forklifts. Designed to simplify the application process and communicate course offerings and accreditation with clarity.", tags: ['Web Design','Development'] },
+  { name: 'PhysioWorks', url: 'https://physioworks.co.zw', desc: "Harare's leading physiotherapy and rehabilitation clinic with 4 city branches — evidence-based care for sports injuries, stroke rehab, paediatric physio, and corporate wellness. Built to help patients find their nearest branch and book appointments with ease.", tags: ['Web Design','Development'] }
+];
+
+/* ── Custom cursor: small dot + smooth trailing ring ── */
+(function initCustomCursor() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const dot = document.createElement('div'); dot.className = 'cursor-dot';
+  const ring = document.createElement('div'); ring.className = 'cursor-ring';
+  document.body.appendChild(dot);
+  document.body.appendChild(ring);
+  document.documentElement.classList.add('custom-cursor-active');
+
+  let mx = -100, my = -100, rx = -100, ry = -100;
+
+  window.addEventListener('mousemove', (e) => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+    dot.classList.remove('hidden'); ring.classList.remove('hidden');
+  });
+  document.addEventListener('mouseleave', () => { dot.classList.add('hidden'); ring.classList.add('hidden'); });
+
+  function loop() {
+    rx += (mx - rx) * 0.18;
+    ry += (my - ry) * 0.18;
+    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  const interactiveSelector = 'a, button, input, textarea, select, .card, .arrow-btn';
+  document.addEventListener('mouseover', (e) => { if (e.target.closest(interactiveSelector)) ring.classList.add('hovering'); });
+  document.addEventListener('mouseout',  (e) => { if (e.target.closest(interactiveSelector)) ring.classList.remove('hovering'); });
+  document.addEventListener('mousedown', () => ring.classList.add('pressing'));
+  document.addEventListener('mouseup',   () => ring.classList.remove('pressing'));
+})();
+
+/* ── Nav: transparent → solid on scroll ── */
+const mainNav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  mainNav.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+/* ── Rotating hero headline word ── */
+(function initHeroCycle() {
+  const words = ['clinics', 'hotels', 'restaurants', 'shop owners', 'construction firms', 'schools', 'salons', 'law firms'];
+  const el = document.getElementById('cycleWord');
+  if (!el) return;
+  let idx = 0;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function next() {
+    if (reduced) {
+      idx = (idx + 1) % words.length;
+      el.textContent = words[idx];
+      return;
+    }
+    el.classList.add('swap-out');
+    setTimeout(() => {
+      idx = (idx + 1) % words.length;
+      el.textContent = words[idx];
+      el.classList.remove('swap-out');
+      el.classList.add('swap-in-start');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => el.classList.remove('swap-in-start'));
+      });
+    }, 350);
+  }
+  setInterval(next, 2200);
+})();
+
+/* ── Card iframes (legacy, unused since cards render static screenshots) ── */
+function scaleCardIframes() {
+  document.querySelectorAll('.card-screen .live-frame').forEach(iframe => {
+    const wrap = iframe.closest('.card-screen');
+    if (!wrap) return;
+    const w = wrap.clientWidth;
+    const scale = w / 1280;
+    iframe.style.transform = `scale(${scale})`;
+    iframe.style.height = (wrap.clientHeight / scale) + 'px';
+  });
+}
+window.addEventListener('resize', scaleCardIframes);
+function initCardFrames() {
+  const frames = document.querySelectorAll('.card-screen .live-frame');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const iframe = entry.target;
+        if (!iframe.src) iframe.src = iframe.dataset.src;
+        iframe.addEventListener('load', () => { iframe.classList.add('loaded'); scaleCardIframes(); }, { once: true });
+        io.unobserve(iframe);
+      }
+    });
+  }, { rootMargin: '200px' });
+  frames.forEach(f => io.observe(f));
+  scaleCardIframes();
+}
+window.addEventListener('load', initCardFrames);
+
+/* ── Preconnect on hover: warms up the connection to a project's real site
+   BEFORE the user clicks, so the iframe loads noticeably faster when the
+   lightbox opens. This is the only legitimate way to speed up someone
+   else's server response from our side — we can't make their host faster,
+   but we can skip the DNS + TLS handshake delay by starting it early. ── */
+function preconnectTo(url) {
+  try {
+    const origin = new URL(url).origin;
+    if (document.querySelector(`link[data-pc="${origin}"]`)) return;
+    const l1 = document.createElement('link');
+    l1.rel = 'preconnect'; l1.href = origin; l1.crossOrigin = 'anonymous'; l1.dataset.pc = origin;
+    const l2 = document.createElement('link');
+    l2.rel = 'dns-prefetch'; l2.href = origin;
+    document.head.appendChild(l1);
+    document.head.appendChild(l2);
+  } catch (e) { /* ignore malformed URLs */ }
+}
+
+/* ── Background preload: actually loads the site in a hidden iframe the moment
+   someone hovers its card. By the time they click, the browser's own cache
+   already has the page's assets, so it opens near-instantly instead of
+   fetching everything cold. This is the real fix for the 3-second target —
+   preconnect alone only saves the handshake, this saves the whole fetch. ── */
+const lbPreloadedUrls = {};
+function warmPreload(url) {
+  if (lbPreloadedUrls[url]) return;
+  lbPreloadedUrls[url] = true;
+  const pool = document.getElementById('lbPreloadPool');
+  if (!pool) return;
+  const f = document.createElement('iframe');
+  f.src = url;
+  f.style.width = '1440px';
+  f.style.height = '900px';
+  f.tabIndex = -1;
+  f.setAttribute('aria-hidden', 'true');
+  f.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+  pool.appendChild(f);
+}
+
+document.querySelectorAll('.card').forEach((card, i) => {
+  const warm = () => { preconnectTo(PROJECTS[i].url); warmPreload(PROJECTS[i].url); };
+  card.addEventListener('mouseenter', warm, { once: true });
+  card.addEventListener('touchstart', warm, { once: true, passive: true });
+  // Belt-and-braces: attach a real JS click listener too, in addition to the
+  // inline onclick attribute already on the element, so there are two
+  // independent paths to opening the preview instead of relying on just one.
+  card.addEventListener('click', () => openLB(i));
+});
+
+/* ── Lightbox ── */
+const LB_VIRTUAL_WIDTH = 1440;  // pretend the site is being viewed on a real 1440x900 laptop screen...
+const LB_VIRTUAL_HEIGHT = 900;  // ...but ONLY on desktop-sized screens (see below).
+function fitLBIframe() {
+  const outer = document.querySelector('.lb-site-wrap');
+  const wrap = document.getElementById('lbIframeWrap');
+  const iframe = document.getElementById('lbIframe');
+  if (!outer || !wrap || !iframe) return;
+
+  const isMobile = window.matchMedia('(max-width: 700px)').matches;
+  debugLog('fitLBIframe: isMobile=' + isMobile + ' outerW=' + outer.clientWidth + ' outerH=' + outer.clientHeight);
+
+  if (isMobile) {
+    // Real sites are already responsive for every device, so on a phone we let them
+    // render natively at the phone's own width instead of forcing a desktop layout.
+    // Using explicit pixel values here (not "100%") avoids percentage-height
+    // resolution silently failing through the nested flex containers.
+    const cs = getComputedStyle(outer);
+    const availW = Math.max(0, outer.clientWidth  - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
+    const availH = Math.max(0, outer.clientHeight - parseFloat(cs.paddingTop)  - parseFloat(cs.paddingBottom));
+    iframe.style.width = availW + 'px';
+    iframe.style.height = availH + 'px';
+    iframe.style.transform = 'none';
+    wrap.style.width = availW + 'px';
+    wrap.style.height = availH + 'px';
+    return;
+  }
+
+  iframe.style.width = LB_VIRTUAL_WIDTH + 'px';
+  iframe.style.height = LB_VIRTUAL_HEIGHT + 'px';
+  const cs = getComputedStyle(outer);
+  const availW = outer.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const availH = outer.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  const scale = Math.min(availW / LB_VIRTUAL_WIDTH, availH / LB_VIRTUAL_HEIGHT, 1);
+  iframe.style.transform = `scale(${scale})`;
+  wrap.style.width  = (LB_VIRTUAL_WIDTH * scale) + 'px';
+  wrap.style.height = (LB_VIRTUAL_HEIGHT * scale) + 'px';
+}
+window.addEventListener('resize', () => {
+  if (document.getElementById('lbOverlay').classList.contains('open')) fitLBIframe();
+});
+
+function openLB(i) {
+  debugLog('openLB called, i=' + i);
+  const p = PROJECTS[i];
+  document.getElementById('lbName').textContent = p.name;
+  document.getElementById('lbDesc').textContent = p.desc;
+  document.getElementById('lbVisit').href = p.url;
+  document.getElementById('lbTags').innerHTML = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+  const iframe = document.getElementById('lbIframe');
+  const loading = document.getElementById('lbLoading');
+  const loadingSub = document.getElementById('lbLoadingSub');
+  iframe.classList.remove('loaded');
+  loading.classList.remove('slow');
+  loading.style.display = 'flex';
+  loadingSub.innerHTML = '';
+  iframe.src = p.url;
+
+  clearTimeout(window._lbSlowTimer);
+  window._lbSlowTimer = setTimeout(() => {
+    if (!iframe.classList.contains('loaded')) {
+      loading.classList.add('slow');
+      loadingSub.innerHTML = `Taking a little longer than usual — <a href="${p.url}" target="_blank" rel="noopener">open it directly</a> instead.`;
+    }
+  }, 4000);
+
+  iframe.onload = () => {
+    iframe.classList.add('loaded');
+    loading.style.display = 'none';
+    clearTimeout(window._lbSlowTimer);
+  };
+  document.getElementById('lbOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  requestAnimationFrame(fitLBIframe);
+}
+function closeLB() {
+  document.getElementById('lbOverlay').classList.remove('open');
+  document.getElementById('lbIframe').src = '';
+  clearTimeout(window._lbSlowTimer);
+  document.body.style.overflow = '';
+}
+function handleLBClick(e) { if (e.target === document.getElementById('lbOverlay')) closeLB(); }
+
+/* ── Enquiry Panel ── */
+function openPanel() { document.getElementById('overlay').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closePanel() { document.getElementById('overlay').classList.remove('open'); document.body.style.overflow = ''; }
+function handleOverlayClick(e) { if (e.target === document.getElementById('overlay')) closePanel(); }
+function submitForm() {
+  const name = document.getElementById('enqName').value.trim();
+  const contact = document.getElementById('enqContact').value.trim();
+  const details = document.getElementById('enqDetails').value.trim();
+
+  if (!name || !contact || !details) {
+    toast('Please fill in all fields first');
+    return;
+  }
+
+  const subject = encodeURIComponent(`New Project Enquiry — ${name}`);
+  const body = encodeURIComponent(
+    `Name: ${name}\nWhatsApp / Email: ${contact}\n\nProject details:\n${details}`
+  );
+  window.location.href = `mailto:messiahfurusai@gmail.com?subject=${subject}&body=${body}`;
+
+  closePanel();
+  toast('Opening your email app to send this over…');
+}
+
+/* ── Copy email ── */
+function copyEmail() {
+  navigator.clipboard.writeText('hello@tendowebsites.co.zw')
+    .then(() => toast('Email copied! hello@tendowebsites.co.zw'))
+    .catch(()  => toast('Email: hello@tendowebsites.co.zw'));
+}
+
+/* ── Toast ── */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+/* ── Smooth scroll ── */
+function smoothTo(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
+</script>
+</body>
+</html>
