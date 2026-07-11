@@ -479,7 +479,10 @@ footer {
 .lb-close { position: absolute; top: 14px; right: 14px; z-index: 5; width: 38px; height: 38px; border-radius: 50%; background: var(--yellow); color: var(--ink); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 900; box-shadow: 0 2px 8px rgba(0,0,0,.15); transition: transform .15s; }
 /* Neutral gray stage the framed preview sits on — small, centered, no lavender bleeding through the sides */
 .lb-site-wrap { width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; background: #f2f2f4; overflow: hidden; padding: 20px; touch-action: pan-y; }
-.lb-iframe-wrap { position: relative; overflow: hidden; background: #fff; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,.18); touch-action: auto; }
+.lb-iframe-wrap { position: relative; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; background: #fff; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,.18); touch-action: pan-y; }
+.lb-iframe-wrap::-webkit-scrollbar { width: 8px; }
+.lb-iframe-wrap::-webkit-scrollbar-track { background: transparent; }
+.lb-iframe-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,.22); border-radius: 10px; }
 .lb-iframe-wrap iframe {
   position: absolute; top: 0; left: 0;
   width: 1440px; height: 900px;
@@ -540,13 +543,15 @@ footer {
   .footer-btn { padding: 14px 22px; font-size: 0.88rem; }
   .panel { padding: 48px 18px 32px; }
   .panel h2 { font-size: 1.6rem; }
-  .lb-overlay { padding: 10px; }
-  .lb-box { height: 90vh; max-height: 90vh; border-radius: 14px; }
-  .lb-box { height: 90dvh; max-height: 90dvh; } /* accurate on mobile browsers where the address bar resizes */
-  .lb-site-wrap { padding: 14px; }
-  .lb-visit { padding: 7px 12px; font-size: .74rem; }
-  .lb-name { font-size: 1.15rem; }
-  .lb-body { padding: 14px 18px 18px; }
+  .lb-overlay { padding: 6px; }
+  .lb-box { height: 96vh; max-height: 96vh; border-radius: 12px; }
+  .lb-box { height: 96dvh; max-height: 96dvh; } /* accurate on mobile browsers where the address bar resizes */
+  .lb-site-wrap { padding: 8px; }
+  .lb-close { top: 8px; right: 8px; width: 32px; height: 32px; }
+  .lb-name { font-size: 1.05rem; }
+  .lb-desc { font-size: .78rem; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
+  .lb-visit { padding: 6px 12px; font-size: .72rem; }
+  .lb-body { padding: 10px 14px 12px; }
   .toast { font-size: 0.78rem; padding: 10px 18px; bottom: 18px; }
   .wa-float { width: 52px; height: 52px; bottom: 18px; right: 18px; }
   .wa-float svg { width: 26px; height: 26px; }
@@ -619,7 +624,7 @@ footer {
 
   <div class="work-grid">
 
-    <div class="card" id="card-0">
+    <div class="card" id="card-0" onclick="openLB(0)">
       <div class="card-inner f-lavender">
         <div class="browser">
           <div class="browser-bar">
@@ -639,7 +644,7 @@ footer {
       </div>
     </div>
 
-    <div class="card" id="card-1">
+    <div class="card" id="card-1" onclick="openLB(1)">
       <div class="card-inner f-maroon">
         <div class="browser">
           <div class="browser-bar">
@@ -659,7 +664,7 @@ footer {
       </div>
     </div>
 
-    <div class="card" id="card-2">
+    <div class="card" id="card-2" onclick="openLB(2)">
       <div class="card-inner f-lime">
         <div class="browser">
           <div class="browser-bar">
@@ -679,7 +684,7 @@ footer {
       </div>
     </div>
 
-    <div class="card" id="card-3">
+    <div class="card" id="card-3" onclick="openLB(3)">
       <div class="card-inner f-scallop">
         <div class="browser">
           <div class="browser-bar">
@@ -699,7 +704,7 @@ footer {
       </div>
     </div>
 
-    <div class="card" id="card-4">
+    <div class="card" id="card-4" onclick="openLB(4)">
       <div class="card-inner f-purple">
         <div class="browser">
           <div class="browser-bar">
@@ -879,26 +884,6 @@ footer {
 <div id="lbPreloadPool" style="position:fixed; width:0; height:0; overflow:hidden; opacity:0; pointer-events:none;" aria-hidden="true"></div>
 
 <script>
-/* ── TEMPORARY DEBUG BANNER — shows errors AND key trace points directly on
-   screen so we can see exactly what's happening on your actual phone instead
-   of guessing blind. Remove this whole block once the bug is found. ── */
-function debugLog(msg) {
-  let banner = document.getElementById('debugErrorBanner');
-  if (!banner) {
-    banner = document.createElement('div');
-    banner.id = 'debugErrorBanner';
-    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:#fff;font:12px monospace;padding:10px;z-index:999999;max-height:50vh;overflow:auto;white-space:pre-wrap;';
-    document.body.appendChild(banner);
-  }
-  banner.textContent += msg + '\n';
-  banner.scrollTop = banner.scrollHeight;
-}
-window.addEventListener('error', (e) => {
-  debugLog(`ERROR: ${e.message}  (line ${e.lineno}, col ${e.colno})`);
-});
-document.addEventListener('DOMContentLoaded', () => debugLog('page loaded ok'));
-</script>
-<script>
 const PROJECTS = [
   { name: 'Aqua Wellness', url: 'https://aquawellness.co.zw', desc: "Harare's premier aquatic fitness centre — SCW-certified aqua aerobics, deep water training, adult swim lessons, and tennis coaching. I designed and built this site to clearly communicate the brand and drive class bookings, with a layout that works across all devices.", tags: ['Web Design','Development'] },
   { name: 'City Scape Graphics', url: 'https://cityscapegraphics.co.zw', desc: "Harare's 24-hour premium printing and branding studio — canvas portraits, large-format printing, event backdrops, and vehicle wraps. The site was built to match the boldness of their work, with a strong visual identity and a clear path to generate quote requests.", tags: ['Web Design','Development'] },
@@ -1044,48 +1029,46 @@ function warmPreload(url) {
 }
 
 document.querySelectorAll('.card').forEach((card, i) => {
-  const warm = () => { preconnectTo(PROJECTS[i].url); warmPreload(PROJECTS[i].url); };
-  card.addEventListener('mouseenter', warm, { once: true });
-  card.addEventListener('touchstart', warm, { once: true, passive: true });
-  // Belt-and-braces: attach a real JS click listener too, in addition to the
-  // inline onclick attribute already on the element, so there are two
-  // independent paths to opening the preview instead of relying on just one.
-  card.addEventListener('click', () => openLB(i));
+  // Heavy background pre-load is desktop-only (hover). It used to also fire on
+  // touchstart — which triggers on every finger touch, including just scrolling
+  // past a card — spinning up multiple full hidden page loads at once and
+  // overwhelming the phone's memory/CPU/network. That was causing dropped taps
+  // and the real preview never finishing loading. Mobile no longer pre-loads.
+  card.addEventListener('mouseenter', () => {
+    preconnectTo(PROJECTS[i].url);
+    warmPreload(PROJECTS[i].url);
+  }, { once: true });
 });
 
 /* ── Lightbox ── */
-const LB_VIRTUAL_WIDTH = 1440;  // pretend the site is being viewed on a real 1440x900 laptop screen...
-const LB_VIRTUAL_HEIGHT = 900;  // ...but ONLY on desktop-sized screens (see below).
+const LB_VIRTUAL_WIDTH = 1440;  // always render the real DESKTOP version of the site internally...
+const LB_VIRTUAL_HEIGHT = 900;
 function fitLBIframe() {
   const outer = document.querySelector('.lb-site-wrap');
   const wrap = document.getElementById('lbIframeWrap');
   const iframe = document.getElementById('lbIframe');
   if (!outer || !wrap || !iframe) return;
 
+  iframe.style.width = LB_VIRTUAL_WIDTH + 'px';
+  iframe.style.height = LB_VIRTUAL_HEIGHT + 'px';
+
+  const cs = getComputedStyle(outer);
+  const availW = outer.clientWidth  - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const availH = outer.clientHeight - parseFloat(cs.paddingTop)  - parseFloat(cs.paddingBottom);
+
   const isMobile = window.matchMedia('(max-width: 700px)').matches;
-  debugLog('fitLBIframe: isMobile=' + isMobile + ' outerW=' + outer.clientWidth + ' outerH=' + outer.clientHeight);
 
   if (isMobile) {
-    // Real sites are already responsive for every device, so on a phone we let them
-    // render natively at the phone's own width instead of forcing a desktop layout.
-    // Using explicit pixel values here (not "100%") avoids percentage-height
-    // resolution silently failing through the nested flex containers.
-    const cs = getComputedStyle(outer);
-    const availW = Math.max(0, outer.clientWidth  - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
-    const availH = Math.max(0, outer.clientHeight - parseFloat(cs.paddingTop)  - parseFloat(cs.paddingBottom));
-    iframe.style.width = availW + 'px';
-    iframe.style.height = availH + 'px';
-    iframe.style.transform = 'none';
-    wrap.style.width = availW + 'px';
+    // Show the real desktop layout (like "Request Desktop Site"), scaled to fit the
+    // phone's width. If the desktop page is taller than the visible box, the preview
+    // scrolls vertically to reveal the rest instead of shrinking everything further.
+    const scale = Math.min(availW / LB_VIRTUAL_WIDTH, 1);
+    iframe.style.transform = `scale(${scale})`;
+    wrap.style.width  = (LB_VIRTUAL_WIDTH * scale) + 'px';
     wrap.style.height = availH + 'px';
     return;
   }
 
-  iframe.style.width = LB_VIRTUAL_WIDTH + 'px';
-  iframe.style.height = LB_VIRTUAL_HEIGHT + 'px';
-  const cs = getComputedStyle(outer);
-  const availW = outer.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-  const availH = outer.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
   const scale = Math.min(availW / LB_VIRTUAL_WIDTH, availH / LB_VIRTUAL_HEIGHT, 1);
   iframe.style.transform = `scale(${scale})`;
   wrap.style.width  = (LB_VIRTUAL_WIDTH * scale) + 'px';
@@ -1096,7 +1079,6 @@ window.addEventListener('resize', () => {
 });
 
 function openLB(i) {
-  debugLog('openLB called, i=' + i);
   const p = PROJECTS[i];
   document.getElementById('lbName').textContent = p.name;
   document.getElementById('lbDesc').textContent = p.desc;
