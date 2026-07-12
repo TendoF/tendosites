@@ -67,6 +67,7 @@ body {
   .btn-submit:hover { opacity: .85; transform: scale(1.01); }
   .lb-close:hover { transform: scale(1.08) rotate(90deg); }
   .lb-visit:hover { opacity: .85; transform: translateY(-2px); }
+  .wa-float:hover { transform: scale(1.08); box-shadow: 0 10px 30px rgba(0,0,0,.34); }
 }
 
 
@@ -119,10 +120,11 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
   background:
     radial-gradient(1100px 700px at 82% 8%, rgba(212,224,74,.16), transparent 60%),
     linear-gradient(155deg, var(--maroon) 0%, var(--maroon-deep) 48%, #170810 100%);
+    background-repeat: no-repeat;
 }
 .hero-grain {
   position: absolute; inset: 0; z-index: 1; opacity: .035; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image: url("tendo.png");
   background-size: 200px 200px;
 }
 
@@ -375,7 +377,6 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
   background: var(--pink); display: flex; align-items: center; justify-content: center;
   font-size: 1.1rem; color: var(--ink); font-weight: 800; flex-shrink: 0;
   transition: transform .15s;
-  position: relative; z-index: 5; pointer-events: auto; touch-action: manipulation;
 }
 .card-desc { font-size: 0.95rem; font-weight: 500; color: #666; line-height: 1.6; margin-bottom: 14px; }
 .tags { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -386,7 +387,6 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
   background: var(--maroon); color: #fff; font-size: 0.82rem; font-weight: 700;
   font-family: var(--font); cursor: pointer;
   transition: transform .15s, opacity .15s;
-  position: relative; z-index: 5; pointer-events: auto; touch-action: manipulation;
 }
 .tag-open-btn:hover { transform: translateY(-2px); opacity: .9; }
 .tag-open-btn svg { width: 12px; height: 12px; }
@@ -503,6 +503,16 @@ footer {
 .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--ink); color: #fff; padding: 12px 24px; border-radius: var(--pill); font-weight: 700; font-size: 0.85rem; z-index: 900; pointer-events: none; transition: transform .28s; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 
+/* ══ WHATSAPP FLOATING BUTTON ══ */
+.wa-float {
+  position: fixed; bottom: 26px; right: 26px; z-index: 400;
+  width: 58px; height: 58px; border-radius: 50%;
+  background: #25D366; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,.28);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.wa-float svg { width: 30px; height: 30px; fill: #fff; }
+
 /* ══ RESPONSIVE (rest of site) ══ */
 @media (max-width: 1024px) {
   .work-grid { grid-template-columns: 1fr 1fr; column-gap: 24px; }
@@ -537,6 +547,8 @@ footer {
   .lb-visit { padding: 6px 12px; font-size: .72rem; }
   .lb-body { padding: 10px 14px 12px; }
   .toast { font-size: 0.78rem; padding: 10px 18px; bottom: 18px; }
+  .wa-float { width: 52px; height: 52px; bottom: 18px; right: 18px; }
+  .wa-float svg { width: 26px; height: 26px; }
 }
 </style>
 </head>
@@ -606,7 +618,7 @@ footer {
 
   <div class="work-grid">
 
-    <div class="card" id="card-0">
+    <div class="card" id="card-0" onclick="openLB(0)">
       <div class="card-inner f-lavender">
         <div class="browser">
           <div class="browser-bar">
@@ -619,14 +631,14 @@ footer {
       <div class="card-meta">
         <div class="card-name-row">
           <span class="card-name">Aqua Wellness</span>
-          <button class="arrow-btn" type="button" data-project="0">↗</button>
+          <button class="arrow-btn" onclick="event.stopPropagation();openLB(0)">↗</button>
         </div>
         <p class="card-desc">Harare's premier aquatic fitness centre — swim coaching, aqua aerobics &amp; deep water training.</p>
-        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" type="button" data-project="0">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" onclick="event.stopPropagation();openLB(0)">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </div>
     </div>
 
-    <div class="card" id="card-1">
+    <div class="card" id="card-1" onclick="openLB(1)">
       <div class="card-inner f-maroon">
         <div class="browser">
           <div class="browser-bar">
@@ -639,14 +651,14 @@ footer {
       <div class="card-meta">
         <div class="card-name-row">
           <span class="card-name">City Scape Graphics</span>
-          <button class="arrow-btn" type="button" data-project="1">↗</button>
+          <button class="arrow-btn" onclick="event.stopPropagation();openLB(1)">↗</button>
         </div>
         <p class="card-desc">Harare's 24-hour premium printing studio — canvas portraits, large-format prints &amp; vehicle wraps.</p>
-        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" type="button" data-project="1">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" onclick="event.stopPropagation();openLB(1)">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </div>
     </div>
 
-    <div class="card" id="card-2">
+    <div class="card" id="card-2" onclick="openLB(2)">
       <div class="card-inner f-lime">
         <div class="browser">
           <div class="browser-bar">
@@ -659,14 +671,14 @@ footer {
       <div class="card-meta">
         <div class="card-name-row">
           <span class="card-name">Lismerg Investments</span>
-          <button class="arrow-btn" type="button" data-project="2">↗</button>
+          <button class="arrow-btn" onclick="event.stopPropagation();openLB(2)">↗</button>
         </div>
         <p class="card-desc">Harare's trusted construction specialists — building, roofing, paving, tiling &amp; steelwork.</p>
-        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" type="button" data-project="2">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" onclick="event.stopPropagation();openLB(2)">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </div>
     </div>
 
-    <div class="card" id="card-3">
+    <div class="card" id="card-3" onclick="openLB(3)">
       <div class="card-inner f-scallop">
         <div class="browser">
           <div class="browser-bar">
@@ -679,14 +691,14 @@ footer {
       <div class="card-meta">
         <div class="card-name-row">
           <span class="card-name">Mega Earthmovers</span>
-          <button class="arrow-btn" type="button" data-project="3">↗</button>
+          <button class="arrow-btn" onclick="event.stopPropagation();openLB(3)">↗</button>
         </div>
         <p class="card-desc">Zimbabwe's top heavy-equipment training school — certified operator programs for excavators, cranes &amp; more.</p>
-        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" type="button" data-project="3">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" onclick="event.stopPropagation();openLB(3)">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </div>
     </div>
 
-    <div class="card" id="card-4">
+    <div class="card" id="card-4" onclick="openLB(4)">
       <div class="card-inner f-purple">
         <div class="browser">
           <div class="browser-bar">
@@ -699,10 +711,10 @@ footer {
       <div class="card-meta">
         <div class="card-name-row">
           <span class="card-name">PhysioWorks</span>
-          <button class="arrow-btn" type="button" data-project="4">↗</button>
+          <button class="arrow-btn" onclick="event.stopPropagation();openLB(4)">↗</button>
         </div>
         <p class="card-desc">Harare's leading physiotherapy clinic — 4 branches, evidence-based sports &amp; rehabilitation care.</p>
-        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" type="button" data-project="4">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" onclick="event.stopPropagation();openLB(4)">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </div>
     </div>
 
@@ -812,7 +824,7 @@ footer {
 </footer>
 
 <!-- ═══ ENQUIRY PANEL ═══ -->
-<div class="overlay" id="overlay">
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="panel" id="enquiryPanel">
     <button class="panel-close" onclick="closePanel()">✕</button>
     <h2>Project Enquiry</h2>
@@ -829,7 +841,7 @@ footer {
 </div>
 
 <!-- ═══ LIGHTBOX ═══ -->
-<div class="lb-overlay" id="lbOverlay">
+<div class="lb-overlay" id="lbOverlay" onclick="handleLBClick(event)">
   <div class="lb-box" id="lbBox">
     <button class="lb-close" onclick="closeLB()">✕</button>
     <div class="lb-site-wrap">
@@ -855,6 +867,11 @@ footer {
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- WHATSAPP FLOATING BUTTON -->
+<a class="wa-float" href="https://wa.me/263780159253" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.25-1.38c1.44.79 3.06 1.2 4.79 1.2h.01c5.5 0 9.96-4.46 9.96-9.96 0-2.66-1.04-5.16-2.92-7.04A9.9 9.9 0 0 0 12.04 2zm0 18.2h-.01c-1.5 0-2.98-.4-4.27-1.16l-.31-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.53 3.69-8.22 8.24-8.22 2.2 0 4.27.86 5.82 2.41a8.17 8.17 0 0 1 2.41 5.82c0 4.53-3.69 8.23-8.13 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.78.97-.14.17-.29.19-.53.06-.25-.12-1.04-.38-1.99-1.22-.73-.66-1.23-1.46-1.37-1.71-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.42-.14 0-.31-.02-.48-.02-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.28z"/></svg>
+</a>
 
 <script>
 const PROJECTS = [
@@ -945,6 +962,12 @@ function fitLBIframe() {
   const isMobile = window.matchMedia('(max-width: 700px)').matches;
 
   if (isMobile) {
+    // Show the real desktop layout (like "Request Desktop Site"), shrunk to fit the
+    // phone's width. Using CSS zoom (not transform) here — zoom actually changes the
+    // element's real layout size, so touch-scrolling inside the site works correctly.
+    // The wrap is sized to match the ACTUAL zoomed content, not the full available
+    // box — otherwise it centers a tiny preview inside a mostly-empty tall box,
+    // which is what was making it look stuck at the top.
     const scale = Math.min(availW / LB_MOBILE_VIRTUAL_WIDTH, 1);
     iframe.style.position = 'static';
     iframe.style.transform = 'none';
@@ -970,58 +993,37 @@ window.addEventListener('resize', () => {
   if (document.getElementById('lbOverlay').classList.contains('open')) fitLBIframe();
 });
 
-// Failsafe: force-clear any stuck overlay state on load, in case a previous
-// session left classes/inline styles behind (e.g. browser back/forward cache).
-function resetOverlaysHard() {
-  const ov = document.getElementById('overlay');
-  const lb = document.getElementById('lbOverlay');
-  if (ov) { ov.classList.remove('open'); }
-  if (lb) { lb.classList.remove('open'); }
-  document.body.style.overflow = '';
-}
-window.addEventListener('pageshow', resetOverlaysHard);
-resetOverlaysHard();
-
 function openLB(i) {
-  try {
-    const p = PROJECTS[i];
-    if (!p) return;
-    document.getElementById('lbName').textContent = p.name;
-    document.getElementById('lbDesc').textContent = p.desc;
-    document.getElementById('lbVisit').href = p.url;
-    document.getElementById('lbTags').innerHTML = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
-    const iframe = document.getElementById('lbIframe');
-    const loading = document.getElementById('lbLoading');
-    const loadingSub = document.getElementById('lbLoadingSub');
-    iframe.classList.remove('loaded');
-    loading.classList.remove('slow');
-    loading.style.display = 'flex';
-    loadingSub.innerHTML = '';
-    iframe.src = p.url;
+  const p = PROJECTS[i];
+  document.getElementById('lbName').textContent = p.name;
+  document.getElementById('lbDesc').textContent = p.desc;
+  document.getElementById('lbVisit').href = p.url;
+  document.getElementById('lbTags').innerHTML = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+  const iframe = document.getElementById('lbIframe');
+  const loading = document.getElementById('lbLoading');
+  const loadingSub = document.getElementById('lbLoadingSub');
+  iframe.classList.remove('loaded');
+  loading.classList.remove('slow');
+  loading.style.display = 'flex';
+  loadingSub.innerHTML = '';
+  iframe.src = p.url;
 
+  clearTimeout(window._lbSlowTimer);
+  window._lbSlowTimer = setTimeout(() => {
+    if (!iframe.classList.contains('loaded')) {
+      loading.classList.add('slow');
+      loadingSub.innerHTML = `Taking a little longer than usual — <a href="${p.url}" target="_blank" rel="noopener">open it directly</a> instead.`;
+    }
+  }, 4000);
+
+  iframe.onload = () => {
+    iframe.classList.add('loaded');
+    loading.style.display = 'none';
     clearTimeout(window._lbSlowTimer);
-    window._lbSlowTimer = setTimeout(() => {
-      if (!iframe.classList.contains('loaded')) {
-        loading.classList.add('slow');
-        loadingSub.innerHTML = `Taking a little longer than usual — <a href="${p.url}" target="_blank" rel="noopener">open it directly</a> instead.`;
-      }
-    }, 4000);
-
-    iframe.onload = () => {
-      iframe.classList.add('loaded');
-      loading.style.display = 'none';
-      clearTimeout(window._lbSlowTimer);
-    };
-    document.getElementById('lbOverlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    requestAnimationFrame(fitLBIframe);
-  } catch (err) {
-    // Absolute last resort: never let a JS error block the user from
-    // reaching the live site. If anything above throws, just open it
-    // in a new tab directly instead of leaving them stuck.
-    const p = PROJECTS[i];
-    if (p) window.open(p.url, '_blank', 'noopener');
-  }
+  };
+  document.getElementById('lbOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  requestAnimationFrame(fitLBIframe);
 }
 function closeLB() {
   document.getElementById('lbOverlay').classList.remove('open');
@@ -1029,10 +1031,12 @@ function closeLB() {
   clearTimeout(window._lbSlowTimer);
   document.body.style.overflow = '';
 }
+function handleLBClick(e) { if (e.target === document.getElementById('lbOverlay')) closeLB(); }
 
 /* ── Enquiry Panel ── */
 function openPanel() { document.getElementById('overlay').classList.add('open'); document.body.style.overflow = 'hidden'; }
 function closePanel() { document.getElementById('overlay').classList.remove('open'); document.body.style.overflow = ''; }
+function handleOverlayClick(e) { if (e.target === document.getElementById('overlay')) closePanel(); }
 function submitForm() {
   const name = document.getElementById('enqName').value.trim();
   const contact = document.getElementById('enqContact').value.trim();
@@ -1071,48 +1075,6 @@ function toast(msg) {
 
 /* ── Smooth scroll ── */
 function smoothTo(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
-
-/* ══════════════════════════════════════════════════════════════════
-   PROJECT-OPEN WIRING — deliberately over-engineered to be bulletproof.
-   Every card, its arrow button, and its "Open" button all get their own
-   listener (both click AND touch-safe pointerup), each stopping
-   propagation so nothing above or below can swallow the tap, and each
-   wrapped so a failure in one never prevents another from firing.
-   Overlays only ever intercept clicks on themselves (checked by exact
-   target match) — they can never sit "in front of" and block a project
-   button, on mobile or desktop, in any state.
-   ══════════════════════════════════════════════════════════════════ */
-(function wireProjectButtons() {
-  function bind(el, handler) {
-    if (!el) return;
-    el.style.pointerEvents = 'auto';
-    ['click', 'touchend'].forEach(evt => {
-      el.addEventListener(evt, function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        handler(e);
-      }, { passive: false });
-    });
-  }
-
-  document.querySelectorAll('.card').forEach(card => {
-    const idx = parseInt(card.id.replace('card-', ''), 10);
-    bind(card, () => openLB(idx));
-  });
-
-  document.querySelectorAll('.arrow-btn, .tag-open-btn').forEach(btn => {
-    const idx = parseInt(btn.getAttribute('data-project'), 10);
-    bind(btn, () => openLB(idx));
-  });
-
-  // Overlay backdrops: only close when the tap lands on the backdrop itself,
-  // never on anything it contains — and only via click (not touchend, to
-  // avoid any chance of a stray touch closing something mid-scroll).
-  const overlay = document.getElementById('overlay');
-  const lbOverlay = document.getElementById('lbOverlay');
-  if (overlay) overlay.addEventListener('click', (e) => { if (e.target === overlay) closePanel(); });
-  if (lbOverlay) lbOverlay.addEventListener('click', (e) => { if (e.target === lbOverlay) closeLB(); });
-})();
 </script>
 </body>
 </html>
