@@ -52,10 +52,6 @@ body {
 
 :focus-visible { outline: 2.5px solid var(--maroon); outline-offset: 3px; }
 
-/* All :hover effects gated behind (hover: hover) — on touch devices, an element
-   with a :hover style can require a first "wasted" tap just to trigger the hover
-   state before a second tap registers as a real click. Gating removes that trap
-   entirely so every button and card responds on the very first tap. */
 @media (hover: hover) {
   .nav-btn:hover { opacity: 0.8; transform: translateY(-1px); }
   .hcta-primary:hover { box-shadow: 0 14px 36px rgba(212,224,74,.24); }
@@ -71,7 +67,7 @@ body {
 }
 
 
-/* ══ NAV — transparent over hero, solid after scroll ══ */
+/* ══ NAV ══ */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 300;
   background: transparent;
@@ -112,7 +108,7 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
   nav.scrolled { padding: 12px 20px; }
 }
 
-/* ══ HERO — animated gradient editorial, with rotating industry headline ══ */
+/* ══ HERO ══ */
 .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
 .hero-bg {
@@ -120,10 +116,11 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
   background:
     radial-gradient(1100px 700px at 82% 8%, rgba(212,224,74,.16), transparent 60%),
     linear-gradient(155deg, var(--maroon) 0%, var(--maroon-deep) 48%, #170810 100%);
+    background-repeat: no-repeat;
 }
 .hero-grain {
   position: absolute; inset: 0; z-index: 1; opacity: .035; pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='tendo.png");
+  background-image: url("tendo.png");
   background-size: 200px 200px;
 }
 
@@ -156,7 +153,6 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
 .hero-headline .hl-row:nth-child(2) { padding-left: clamp(1.5rem, 4vw, 4rem); }
 .hero-headline .hl-row:nth-child(3) { padding-left: clamp(.3rem, 1.5vw, 1.2rem); font-size: clamp(1.8rem, 5.6vw, 5.4rem); }
 
-/* Static italic accent word ("that convert.") */
 .hl-serif {
   font-family: var(--font-serif);
   font-style: italic; font-weight: 500;
@@ -177,7 +173,6 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @media (prefers-reduced-motion: reduce) { .hl-underline path { stroke-dashoffset: 0; animation: none; } }
 
-/* Rotating industry word — yellow highlight pill */
 .hl-cycle-word {
   font-family: var(--font);
   font-style: normal; font-weight: 900;
@@ -223,7 +218,6 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
   transition: background .2s, border-color .2s, transform .22s cubic-bezier(.22,1,.36,1);
 }
 
-/* ── Bottom anchor bar — proof strip ── */
 .hero-proof { position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: stretch; border-top: 1px solid rgba(255,255,255,.1); }
 .proof-crawl { flex: 1; overflow: hidden; display: flex; align-items: center; height: 56px; border-right: 1px solid rgba(255,255,255,.1); }
 .proof-crawl-inner { display: flex; white-space: nowrap; animation: crawl 24s linear infinite; will-change: transform; }
@@ -253,7 +247,7 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
   .hcta-primary, .hcta-ghost { width: 100%; justify-content: center; padding: 15px 24px; }
 }
 
-/* ══ PROBLEM SECTION — short, punchy, no fluff ══ */
+/* ══ PROBLEM SECTION ══ */
 .problem-section {
   position: relative;
   background: linear-gradient(160deg, var(--maroon) 0%, var(--maroon-deep) 100%);
@@ -326,10 +320,7 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
   align-items: start;
   width: 100%;
 }
-/* Removed staggered card offset — it could cause one card's box to visually
-   overlap the card below it in the grid, silently stealing clicks meant for
-   the card underneath. Not worth the risk for a purely decorative effect. */
-.card { cursor: pointer; position: relative; z-index: 1; }
+.card { cursor: default; position: relative; z-index: 1; }
 .card-inner {
   border-radius: var(--r);
   padding: 22px;
@@ -350,15 +341,10 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
 .dot { display: none; }
 .url-bar { display: none; }
 .card-screen { width: 100%; overflow: hidden; }
-.card-screen .live-frame {
-  position: absolute; top: 0; left: 0;
-  width: 1280px; height: 900px; border: none;
-  transform-origin: top left;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .5s ease;
-}
-.card-screen .live-frame.loaded { opacity: 1; }
+/* Fixed aspect-ratio reserves the exact box for the screenshot before it has
+   finished loading, so nothing below it shifts position while the page is
+   loading/scrolling. This is what was causing taps to land on the wrong card. */
+.card-screen img { width: 100%; height: auto; display: block; aspect-ratio: 16 / 10.6; object-fit: cover; }
 .screen-fallback {
   position: absolute; inset: 0;
   display: flex;
@@ -386,6 +372,8 @@ nav.scrolled .btn-about { background: var(--pink);   color: var(--ink); }
   background: var(--maroon); color: #fff; font-size: 0.82rem; font-weight: 700;
   font-family: var(--font); cursor: pointer;
   transition: transform .15s, opacity .15s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0,0,0,0.1);
 }
 .tag-open-btn:hover { transform: translateY(-2px); opacity: .9; }
 .tag-open-btn svg { width: 12px; height: 12px; }
@@ -471,34 +459,17 @@ footer {
 .lb-box { background: #fff; border-radius: 18px; width: 100%; max-width: 700px; height: 91vh; max-height: 91vh; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.35); display: flex; flex-direction: column; position: relative; transform: scale(.94) translateY(14px); transition: transform .34s cubic-bezier(.22,1,.36,1); }
 .lb-overlay.open .lb-box { transform: scale(1) translateY(0); }
 .lb-close { position: absolute; top: 14px; right: 14px; z-index: 5; width: 38px; height: 38px; border-radius: 50%; background: var(--yellow); color: var(--ink); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 900; box-shadow: 0 2px 8px rgba(0,0,0,.15); transition: transform .15s; }
-/* Neutral gray stage the framed preview sits on — small, centered, no lavender bleeding through the sides */
 .lb-site-wrap { width: 100%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; background: #f2f2f4; overflow: hidden; padding: 20px; touch-action: pan-y; }
 .lb-iframe-wrap { position: relative; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; background: #fff; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,.18); touch-action: pan-y; }
 .lb-iframe-wrap::-webkit-scrollbar { width: 8px; }
 .lb-iframe-wrap::-webkit-scrollbar-track { background: transparent; }
 .lb-iframe-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,.22); border-radius: 10px; }
-
-
 .lb-iframe-wrap iframe {
-  position: absolute; 
-  top: 0; 
-  left: 0;
-  width: 1440px; 
-  height: 900px;
-  border: none;
-  transform-origin: 0 0;
-  opacity: 0;
-  transition: opacity .4s ease;
-  pointer-events: none;
-  touch-action: auto;
-}
-
-.lb-iframe-wrap iframe.loaded {
-  pointer-events: none;
-}
-
-.lb-overlay:not(.open) iframe {
-  pointer-events: none;
+  position: absolute; top: 0; left: 0;
+  width: 1440px; height: 900px;
+  border: none; transform-origin: 0 0;
+  opacity: 0; transition: opacity .4s ease;
+  pointer-events: auto; touch-action: auto;
 }
 .lb-iframe-wrap iframe.loaded { opacity: 1; }
 .lb-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; font-size: 0.85rem; font-weight: 700; color: #888; text-align: center; padding: 20px; }
@@ -528,7 +499,7 @@ footer {
 }
 .wa-float svg { width: 30px; height: 30px; fill: #fff; }
 
-/* ══ RESPONSIVE (rest of site) ══ */
+/* ══ RESPONSIVE ══ */
 @media (max-width: 1024px) {
   .work-grid { grid-template-columns: 1fr 1fr; column-gap: 24px; }
   .about-inner { grid-template-columns: 1fr; }
@@ -554,7 +525,7 @@ footer {
   .panel h2 { font-size: 1.6rem; }
   .lb-overlay { padding: 5px; }
   .lb-box { height: 97vh; max-height: 97vh; border-radius: 12px; }
-  .lb-box { height: 97dvh; max-height: 97dvh; } /* accurate on mobile browsers where the address bar resizes */
+  .lb-box { height: 97dvh; max-height: 97dvh; }
   .lb-site-wrap { padding: 6px; }
   .lb-close { top: 8px; right: 8px; width: 32px; height: 32px; }
   .lb-name { font-size: 1.05rem; }
@@ -633,103 +604,83 @@ footer {
 
   <div class="work-grid">
 
-    <div class="card" id="card-0" onclick="openLB(0)">
+    <div class="card" id="card-0">
       <div class="card-inner f-lavender">
         <div class="browser">
-          <div class="browser-bar">
-            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-            <span class="url-bar">aquawellness.co.zw</span>
-          </div>
-          <div class="card-screen"><img src="aquawellness.png" alt="Aqua Wellness" style="width:100%;height:auto;display:block;"></div>
+          <div class="card-screen"><img src="aquawellness.png" alt="Aqua Wellness"></div>
         </div>
       </div>
       <div class="card-meta">
         <div class="card-name-row">
           <span class="card-name">Aqua Wellness</span>
-          <button class="arrow-btn" onclick="event.stopPropagation();openLB(0)">↗</button>
+          <button class="arrow-btn">↗</button>
         </div>
         <p class="card-desc">Harare's premier aquatic fitness centre — swim coaching, aqua aerobics &amp; deep water training.</p>
-        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" onclick="event.stopPropagation();openLB(0)">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" data-idx="0">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </div>
     </div>
 
-    <div class="card" id="card-1" onclick="openLB(1)">
+    <div class="card" id="card-1">
       <div class="card-inner f-maroon">
         <div class="browser">
-          <div class="browser-bar">
-            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-            <span class="url-bar">cityscapegraphics.co.zw</span>
-          </div>
-          <div class="card-screen"><img src="cityscape.png" alt="City Scape Graphics" style="width:100%;height:auto;display:block;"></div>
+          <div class="card-screen"><img src="cityscape.png" alt="City Scape Graphics"></div>
         </div>
       </div>
       <div class="card-meta">
         <div class="card-name-row">
           <span class="card-name">City Scape Graphics</span>
-          <button class="arrow-btn" onclick="event.stopPropagation();openLB(1)">↗</button>
+          <button class="arrow-btn">↗</button>
         </div>
         <p class="card-desc">Harare's 24-hour premium printing studio — canvas portraits, large-format prints &amp; vehicle wraps.</p>
-        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" onclick="event.stopPropagation();openLB(1)">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" data-idx="1">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </div>
     </div>
 
-    <div class="card" id="card-2" onclick="openLB(2)">
+    <div class="card" id="card-2">
       <div class="card-inner f-lime">
         <div class="browser">
-          <div class="browser-bar">
-            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-            <span class="url-bar">lismerginvestments.co.zw</span>
-          </div>
-          <div class="card-screen"><img src="lismerg.png" alt="Lismerg Investments" style="width:100%;height:auto;display:block;"></div>
+          <div class="card-screen"><img src="lismerg.png" alt="Lismerg Investments"></div>
         </div>
       </div>
       <div class="card-meta">
         <div class="card-name-row">
           <span class="card-name">Lismerg Investments</span>
-          <button class="arrow-btn" onclick="event.stopPropagation();openLB(2)">↗</button>
+          <button class="arrow-btn">↗</button>
         </div>
         <p class="card-desc">Harare's trusted construction specialists — building, roofing, paving, tiling &amp; steelwork.</p>
-        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" onclick="event.stopPropagation();openLB(2)">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" data-idx="2">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </div>
     </div>
 
-    <div class="card" id="card-3" onclick="openLB(3)">
+    <div class="card" id="card-3">
       <div class="card-inner f-scallop">
         <div class="browser">
-          <div class="browser-bar">
-            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-            <span class="url-bar">megaearthmoverstrainingschool.co.zw</span>
-          </div>
-          <div class="card-screen"><img src="megaearthmovers.png" alt="Mega Earthmovers" style="width:100%;height:auto;display:block;"></div>
+          <div class="card-screen"><img src="megaearthmovers.png" alt="Mega Earthmovers"></div>
         </div>
       </div>
       <div class="card-meta">
         <div class="card-name-row">
           <span class="card-name">Mega Earthmovers</span>
-          <button class="arrow-btn" onclick="event.stopPropagation();openLB(3)">↗</button>
+          <button class="arrow-btn">↗</button>
         </div>
         <p class="card-desc">Zimbabwe's top heavy-equipment training school — certified operator programs for excavators, cranes &amp; more.</p>
-        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" onclick="event.stopPropagation();openLB(3)">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" data-idx="3">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </div>
     </div>
 
-    <div class="card" id="card-4" onclick="openLB(4)">
+    <div class="card" id="card-4">
       <div class="card-inner f-purple">
         <div class="browser">
-          <div class="browser-bar">
-            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-            <span class="url-bar">physioworks.co.zw</span>
-          </div>
-          <div class="card-screen"><img src="physioworks.png" alt="PhysioWorks" style="width:100%;height:auto;display:block;"></div>
+          <div class="card-screen"><img src="physioworks.png" alt="PhysioWorks"></div>
         </div>
       </div>
       <div class="card-meta">
         <div class="card-name-row">
           <span class="card-name">PhysioWorks</span>
-          <button class="arrow-btn" onclick="event.stopPropagation();openLB(4)">↗</button>
+          <button class="arrow-btn">↗</button>
         </div>
         <p class="card-desc">Harare's leading physiotherapy clinic — 4 branches, evidence-based sports &amp; rehabilitation care.</p>
-        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" onclick="event.stopPropagation();openLB(4)">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="tags"><span class="tag">Web Design</span><button class="tag-open-btn" data-idx="4">Open <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 7.5h11M8.5 2l5.5 5.5L8.5 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       </div>
     </div>
 
@@ -931,39 +882,24 @@ window.addEventListener('scroll', () => {
   setInterval(next, 2200);
 })();
 
-/* ── Card iframes (legacy, unused since cards render static screenshots) ── */
-function scaleCardIframes() {
-  document.querySelectorAll('.card-screen .live-frame').forEach(iframe => {
-    const wrap = iframe.closest('.card-screen');
-    if (!wrap) return;
-    const w = wrap.clientWidth;
-    const scale = w / 1280;
-    iframe.style.transform = `scale(${scale})`;
-    iframe.style.height = (wrap.clientHeight / scale) + 'px';
+/* ── Project card taps ──
+   Only the "Open" button under each project opens that project. Nothing
+   else on the card is clickable. Real <button> elements already get
+   correct native tap behavior from the browser (a scroll that ends on top
+   of a button does not fire a click) — no custom scroll-detection needed,
+   and that custom logic is exactly what broke taps last time, so it's
+   gone for good. */
+document.querySelectorAll('.tag-open-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const idx = parseInt(btn.dataset.idx, 10);
+    if (!Number.isNaN(idx)) openLB(idx);
   });
-}
-window.addEventListener('resize', scaleCardIframes);
-function initCardFrames() {
-  const frames = document.querySelectorAll('.card-screen .live-frame');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const iframe = entry.target;
-        if (!iframe.src) iframe.src = iframe.dataset.src;
-        iframe.addEventListener('load', () => { iframe.classList.add('loaded'); scaleCardIframes(); }, { once: true });
-        io.unobserve(iframe);
-      }
-    });
-  }, { rootMargin: '200px' });
-  frames.forEach(f => io.observe(f));
-  scaleCardIframes();
-}
-window.addEventListener('load', initCardFrames);
+});
 
 /* ── Lightbox ── */
-const LB_VIRTUAL_WIDTH = 1440;         // always render the real DESKTOP version of the site internally...
+const LB_VIRTUAL_WIDTH = 1440;
 const LB_VIRTUAL_HEIGHT = 900;
-const LB_MOBILE_VIRTUAL_WIDTH = 1100;  // ...using a narrower reference width on mobile so it scales up bigger
+const LB_MOBILE_VIRTUAL_WIDTH = 1100;
 function fitLBIframe() {
   const outer = document.querySelector('.lb-site-wrap');
   const wrap = document.getElementById('lbIframeWrap');
@@ -977,12 +913,6 @@ function fitLBIframe() {
   const isMobile = window.matchMedia('(max-width: 700px)').matches;
 
   if (isMobile) {
-    // Show the real desktop layout (like "Request Desktop Site"), shrunk to fit the
-    // phone's width. Using CSS zoom (not transform) here — zoom actually changes the
-    // element's real layout size, so touch-scrolling inside the site works correctly.
-    // The wrap is sized to match the ACTUAL zoomed content, not the full available
-    // box — otherwise it centers a tiny preview inside a mostly-empty tall box,
-    // which is what was making it look stuck at the top.
     const scale = Math.min(availW / LB_MOBILE_VIRTUAL_WIDTH, 1);
     iframe.style.position = 'static';
     iframe.style.transform = 'none';
@@ -1010,6 +940,7 @@ window.addEventListener('resize', () => {
 
 function openLB(i) {
   const p = PROJECTS[i];
+  if (!p) return;
   document.getElementById('lbName').textContent = p.name;
   document.getElementById('lbDesc').textContent = p.desc;
   document.getElementById('lbVisit').href = p.url;
@@ -1041,14 +972,8 @@ function openLB(i) {
   requestAnimationFrame(fitLBIframe);
 }
 function closeLB() {
-  const overlay = document.getElementById('lbOverlay');
-  const iframe = document.getElementById('lbIframe');
-
-  overlay.classList.remove('open');
-
-  iframe.src = '';
-  iframe.classList.remove('loaded');
-
+  document.getElementById('lbOverlay').classList.remove('open');
+  document.getElementById('lbIframe').src = '';
   clearTimeout(window._lbSlowTimer);
   document.body.style.overflow = '';
 }
