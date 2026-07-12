@@ -543,10 +543,10 @@ footer {
   .footer-btn { padding: 14px 22px; font-size: 0.88rem; }
   .panel { padding: 48px 18px 32px; }
   .panel h2 { font-size: 1.6rem; }
-  .lb-overlay { padding: 5px; }
-  .lb-box { height: 97vh; max-height: 97vh; border-radius: 12px; }
-  .lb-box { height: 97dvh; max-height: 97dvh; } /* accurate on mobile browsers where the address bar resizes */
-  .lb-site-wrap { padding: 6px; }
+  .lb-overlay { padding: 6px; }
+  .lb-box { height: 96vh; max-height: 96vh; border-radius: 12px; }
+  .lb-box { height: 96dvh; max-height: 96dvh; } /* accurate on mobile browsers where the address bar resizes */
+  .lb-site-wrap { padding: 8px; }
   .lb-close { top: 8px; right: 8px; width: 32px; height: 32px; }
   .lb-name { font-size: 1.05rem; }
   .lb-desc { font-size: .78rem; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
@@ -1041,14 +1041,16 @@ document.querySelectorAll('.card').forEach((card, i) => {
 });
 
 /* ── Lightbox ── */
-const LB_VIRTUAL_WIDTH = 1440;         // always render the real DESKTOP version of the site internally...
+const LB_VIRTUAL_WIDTH = 1440;  // always render the real DESKTOP version of the site internally...
 const LB_VIRTUAL_HEIGHT = 900;
-const LB_MOBILE_VIRTUAL_WIDTH = 1100;  // ...using a narrower reference width on mobile so it scales up bigger
 function fitLBIframe() {
   const outer = document.querySelector('.lb-site-wrap');
   const wrap = document.getElementById('lbIframeWrap');
   const iframe = document.getElementById('lbIframe');
   if (!outer || !wrap || !iframe) return;
+
+  iframe.style.width = LB_VIRTUAL_WIDTH + 'px';
+  iframe.style.height = LB_VIRTUAL_HEIGHT + 'px';
 
   const cs = getComputedStyle(outer);
   const availW = outer.clientWidth  - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
@@ -1057,28 +1059,16 @@ function fitLBIframe() {
   const isMobile = window.matchMedia('(max-width: 700px)').matches;
 
   if (isMobile) {
-    // Show the real desktop layout (like "Request Desktop Site"), shrunk to fit the
-    // phone's width. Using CSS zoom (not transform) here — zoom actually changes the
-    // element's real layout size, so touch-scrolling inside the site works correctly.
-    // The wrap is sized to match the ACTUAL zoomed content, not the full available
-    // box — otherwise it centers a tiny preview inside a mostly-empty tall box,
-    // which is what was making it look stuck at the top.
-    const scale = Math.min(availW / LB_MOBILE_VIRTUAL_WIDTH, 1);
-    iframe.style.position = 'static';
-    iframe.style.transform = 'none';
-    iframe.style.width = LB_MOBILE_VIRTUAL_WIDTH + 'px';
-    iframe.style.height = LB_VIRTUAL_HEIGHT + 'px';
-    iframe.style.zoom = scale;
-    wrap.style.width  = (LB_MOBILE_VIRTUAL_WIDTH * scale) + 'px';
-    wrap.style.height = (LB_VIRTUAL_HEIGHT * scale) + 'px';
-    wrap.style.maxHeight = availH + 'px';
+    // Show the real desktop layout (like "Request Desktop Site"), scaled to fit the
+    // phone's width. If the desktop page is taller than the visible box, the preview
+    // scrolls vertically to reveal the rest instead of shrinking everything further.
+    const scale = Math.min(availW / LB_VIRTUAL_WIDTH, 1);
+    iframe.style.transform = `scale(${scale})`;
+    wrap.style.width  = (LB_VIRTUAL_WIDTH * scale) + 'px';
+    wrap.style.height = availH + 'px';
     return;
   }
 
-  iframe.style.position = 'absolute';
-  iframe.style.zoom = 1;
-  iframe.style.width = LB_VIRTUAL_WIDTH + 'px';
-  iframe.style.height = LB_VIRTUAL_HEIGHT + 'px';
   const scale = Math.min(availW / LB_VIRTUAL_WIDTH, availH / LB_VIRTUAL_HEIGHT, 1);
   iframe.style.transform = `scale(${scale})`;
   wrap.style.width  = (LB_VIRTUAL_WIDTH * scale) + 'px';
